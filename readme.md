@@ -9,7 +9,7 @@ Opens the Calibre library as read-only; this is a module for *reading* the libra
 If you want to use it as a stand-alone server:
 
 ```sh
-npm install -g calibre-server
+npm install -g calibre-serve
 ```
 
 Then:
