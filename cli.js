@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const pkg = require('./package.json');
 const {name,version} = pkg;
 const args = process.argv.slice(2)
