@@ -59,7 +59,11 @@ calibreAPI(path,databases,function(err,LIB){
 ## Methods:
 
 
-### calibreAPI(path:string,databases:string[],nodeBack:(err?:Error,LIB:Manager))=>void
+### calibreAPI
+
+```js
+calibreAPI(path:string,databases:string[],nodeBack:(err?:Error,LIB:Manager))=>void
+```
 
 returns a manager. A manager has four main methods: `getBook`, `getSeries`, `getAuthor`, and `getTag`. All methods work the same:
 
@@ -69,13 +73,20 @@ returns a manager. A manager has four main methods: `getBook`, `getSeries`, `get
  - `locator` is either a numeric id (exact match), a string (will try to match with `LIKE %locator%`), or nothing (all results will be returned)
 
 
-### calibreAPI.makeServer(path:string,databases:string[],nodeBack(err?:Error,LIB:manager))=>void
+### calibreAPI.makeServer
 
-Returns a manager, augmented with an additional method:
+```js
+calibreAPI.makeServer(path:string,databases:string[],nodeBack(err?:Error,LIB:manager))=>void
+```
 
-`getRequestHandler(options:{}) => (res,req,next)`
+Returns a manager, augmented with an additional method `getRequestHandler` which returns a request handler.
 
-Which returns a request handler.
+```
+const server = calibreAPI.makeServer(/*...*/);
+const requestHandler = server.getRequestHandler(options:{});
+// requestHandler is a regular connect handler with signature
+// (res,req,next)
+```
 
 Possible options are:
  - `options.mountPoint`: required,string. The root point for all URLS in templates.
@@ -94,6 +105,10 @@ Possible options are:
 If you use that, you should set a static server to allow the Calibre server to request images. This would go something like:
 
 ```js
+
+const calibreAPI = require('calibre-serve');
+const makeServer = calibreAPI.makeServer;
+
 const root = '/path/to/calibre';
 const directories = ['database'];
 const databases = [{name:'My Database',path:'database',description:'a very nice database'}]
@@ -118,10 +133,14 @@ makeServer(root,directories,function(err,LIB){
 
 ### calibreAPI.connect
 
+```
+calibreAPI.connect(options)
+```
+
 A nicer API for the above `makeServer`;
 
 ```js
-const calibreAPI = require('./src')
+const calibreAPI = require('calibre-serve');
 const connect = calibreAPI.connect;
 
 connect(
