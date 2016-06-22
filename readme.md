@@ -14,12 +14,12 @@ npm install -g calibre-serve
 
 Then:
 ```
-calibre-server /path/to/calibre/database
+calibre-serve /path/to/calibre/database
 ```
 
 the path should be **one directory above** your actual database directory. That is, if `metadata.db` is situated at `/path/to/calibre/database/metadata.db`, then you should use `/path/to/calibre`. Calibre-server will take care of reading sub-directories and adding all the ones that have a `metadata.db`.
 
-You can use `calibre-server -h` for help about using options such as port or setting the server's title.
+You can use `calibre-serve -h` for help about using options such as port or setting the server's title.
 
 
 this is how the default templates look:
@@ -33,12 +33,12 @@ this is how the default templates look:
 To use it in another module:
 
 ```sh
-npm install --save calibre-server
+npm install --save calibre-serve
 ```
 Then:
 
 ```js
-const calibreAPI = require('calibre-server');
+const calibreAPI = require('calibre-serve');
 const path = 'path/to/calibre'
 const databases = ['database'];
 
