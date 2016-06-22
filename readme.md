@@ -22,6 +22,10 @@ the path should be **one directory above** your actual database directory. That 
 You can use `calibre-server -h` for help about using options such as port or setting the server's title.
 
 
+this is how the default templates look:
+
+![preview](preview.png?raw=true)
+
 ----
 
 ## Node API
