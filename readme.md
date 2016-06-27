@@ -19,7 +19,7 @@ Then:
 calibre-serve /path/to/calibre/database
 ```
 
-the path should be **one directory above** your actual database directory. That is, if `metadata.db` is situated at `/path/to/calibre/database/metadata.db`, then you should use `/path/to/calibre`. Calibre-server will take care of reading sub-directories and adding all the ones that have a `metadata.db`.
+the path should be **one directory above** your actual database directory. That is, if `metadata.db` is situated at `/path/to/calibre/database/metadata.db`, then you should use `/path/to/calibre`. Calibre-server will take care of reading sub-directories and adding all the ones that have a `metadata.db`. If no directory is provided, calibre-serve will default to the current directory.
 
 You can use `calibre-serve -h` for help about using options such as port or setting the server's title.
 

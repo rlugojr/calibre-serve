@@ -54,6 +54,7 @@ once with, for example, "?token=b"
     -t,--title: specify server title
 	-o,--tokens: a comma-separated list of tokens
 	-f,--footer: specify a footer
+	-b,--base: the base directory (can also be specified without a switch)
     --test: verify that the directory is valid
 ${additional}`);
 }
@@ -66,7 +67,7 @@ function printVersion(){
 
 function testDir(dir){
 	try{
-		fs.readdirSync(arg);
+		const dirs = fs.readdirSync(dir);
 		return true;
 	}catch(e){
 		return false;
@@ -74,55 +75,44 @@ function testDir(dir){
 	return false;
 }
 
-if(!args.length){
-	logAndExit(1,`${name} requires a path argument: \`${name} /path/to/libraries\``);
-}
 
-const [arg,...rest] = args;
-
-if(testArg('h','help',arg)){
-	printHelp();
-}
-
-if(testArg('v','version',arg)){
-	printVersion()
-}
-
-const valid = testDir(arg);
-
-const databases = valid && readDatabasesFromDisk(arg);
-
+let dir = null;
 let port = 3000;
 let title = 'Calibre Server';
 let i = 0;
 let testing = false;
 let footer = '';
-const {length} = rest;
+const {length} = args;
 let tokens;
 
 while(i<length){
 
-	const a = rest[i++];
+	const a = args[i++];
 
 	if(testArg('p','port',a)){
-		port = args[++i];
+		port = args[i++];
 		continue;
 	}
 
 
 	if(testArg('t','title',a)){
-		title = args[++i];
+		title = args[i++];
 		continue;
 	}
 
 
 	if(testArg('o','tokens',a)){
-		tokens = args[++i];
+		tokens = args[i++];
+		continue;
+	}
+
+	if(testArg('b','base',a)){
+		dir = args[i++];
 		continue;
 	}
 
 	if(testArg('f','footer',a)){
-		footer = args[++i];
+		footer = args[i++];
 		continue;
 	}
 
@@ -137,19 +127,11 @@ while(i<length){
 	}
 
 	if(testArg('te','test',a)){
-		console.log('\n testing:')
-		if(!valid){
-			console.log(` \`${arg}\` is not a valid directory\n`)
-			console.log(' status: INVALID\n');
-			process.exit(0);
-		}
-		if(!databases || !databases.length){
-			console.log(` couldn't find a single directory containing \`metadata.db\` in \`${arg}\``)
-			console.log(' status: INVALID\n');
-			process.exit(0);
-		}
 		testing = true;
+		continue;
 	}
+
+	dir = a;
 
 }
 
@@ -157,11 +139,43 @@ if(tokens){
 	tokens = tokens.split(',').map(token=>token.trim())
 }
 
+if(!dir){
+	dir = path.resolve('.');
+}
+
+const valid = testDir(dir);
+
+const databases = valid && readDatabasesFromDisk(dir);
+
+function errorInvalidDirectory(dir){
+	return ` \`${dir}\` is not a valid directory\n`;
+}
+
+function errorNoMetadata(dir){
+		return ` couldn't find a single directory containing \`metadata.db\` in \`${dir}\`
+ Did you mean \`${path.dirname(dir)}\`?
+`;
+}
+
 function details(){
-	console.log(' status: VALID\n');
+	console.log('\n testing:')
 	console.log(` \`${title}\` server will run on port \`${port}\``)
-	console.log(` and will read databases from \`${databases.map(d=>d.path).join(',')}\`\n`)
+	console.log(` and will read databases from \`${databases && databases.map(d=>d.path).join(',') || 'NONE FOUND'}\`\n`)
 	console.log(tokens ? ` authentication tokens are \`[${tokens && tokens.join(',')}]\`\n` : ' no authentication tokens set\n')
+	console.log(footer ? ` footer will be set to \`${footer}\`` : ' no footer set')
+	if(!valid){
+		console.log('\n ERROR:')
+		console.log(errorInvalidDirectory(dir));
+		console.log(' status: INVALID\n');
+		process.exit(0);
+	}
+	if(!databases || !databases.length){
+		console.log('\n ERROR:')
+		console.log(errorNoMetadata(dir))
+		console.log(' status: INVALID\n');
+		process.exit(0);
+	}
+	console.log(' status: VALID\n');
 }
 
 if(testing){
@@ -170,16 +184,13 @@ if(testing){
 }
 
 if(!valid){
-	logAndExit(1,`\`${arg}\` is not a valid directory\n`);
+	logAndExit(1,errorInvalidDirectory(dir));
 }
 
 if(!databases || !databases.length){
-	logAndExit(1,`
- couldn't find a single directory containing \`metadata.db\` in \`${arg}\`
- maybe you meant ${path.dirname(arg)}
-`)
+	logAndExit(1,errorNoMetadata(dir));
 }
 
 details();
 
-require('./server')(arg,title,port,tokens,footer);
+require('./server')(dir,title,port,tokens,footer);
