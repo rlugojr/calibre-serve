@@ -1,4 +1,5 @@
-var session = require('express-session')
+const session = require('express-session')
+const FileStore = require('session-file-store')(session);
 
 module.exports = function createAuth(app,tokens,skip){
 
@@ -10,6 +11,7 @@ module.exports = function createAuth(app,tokens,skip){
 		{ secret: Math.random()+'calibre-server'
 		, resave: false
 		, saveUninitialized: true
+		, store:new FileStore()
 		})
 	);
 

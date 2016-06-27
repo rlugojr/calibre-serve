@@ -1,6 +1,6 @@
 {
   "name": "calibre-serve",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A calibre API and server",
   "main": "index.js",
   "bin": "cli.js",
@@ -17,6 +17,7 @@
     "express-session": "^1.13.0",
     "moment": "^2.13.0",
     "serve-favicon": "^2.3.0",
+    "session-file-store": "^0.2.0",
     "sqlite3": "^3.1.4",
     "squel": "^5.3.2"
   },

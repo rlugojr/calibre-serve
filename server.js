@@ -25,8 +25,8 @@ function log(req,res,next){
 
 function errorLog(err,req,res,next){
 	const url = URL.parse(req.url).pathname;
-	console.error(formatLog(req,url)+`ERROR: ${err.message}`);
-	return next();
+	console.error(formatLog(req,url)+`\nERROR: ${err.message}`);
+	return next(err);
 }
 
 function startServer(root,title='Calibre Server',port=3000,tokens=false,footer='',ga=null,verbose=true){
