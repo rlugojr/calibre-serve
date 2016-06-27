@@ -6,7 +6,6 @@ module.exports = function createAuth(app,tokens,skip){
 	tokens.forEach(function(token){
 		_tokens[token] = true;
 	})
-	app.set('trust proxy', 1)
 	app.use(session(
 		{ secret: Math.random()+'calibre-server'
 		, resave: false

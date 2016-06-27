@@ -297,7 +297,8 @@ function error(error,status,url,dbName,options){
 	if(status == 403){
 		return renderError('Forbidden Acces (Error 403)',`You are not allowed to access this ${isFile ? 'file':'page'}`)
 	}
-	return renderError('Internal Server Error',`${message}<br><pre>${error.stack}</pre><br>What happened? It's a mystery. Contact the website author please.`);
+	const stack = `<pre>${error.stack}</pre>`;
+	return renderError('Internal Server Error',`${message}<br>What happened? It's a mystery. Contact the website author please.`);
 }
 
 function renderFooter(options){

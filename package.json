@@ -1,6 +1,6 @@
 {
   "name": "calibre-serve",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "A calibre API and server",
   "main": "index.js",
   "bin": "cli.js",
