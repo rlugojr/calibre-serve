@@ -53,6 +53,7 @@ function startServer(root,title='Calibre Server',port=3000,tokens=false,footer='
 		, title
 		, footer
 		, ga
+		, doAuthenticate
 		}
 	,	function(err,requestHandler){
 			if(err){throw err;}

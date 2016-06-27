@@ -77,15 +77,19 @@ function renderBook(book,summary=true,dbName,options,level=3){
 		, data
 	} = book;
 	
-	const url = `${mountPoint}book/${book_id}`;
+	const shouldRenderFiles = (
+		!summary && 
+		(!options.doAuthenticate || options.authenticated)
+	)
 
+	const url = `${mountPoint}book/${book_id}`;
 	const _authors = authors && renderAuthorsLinks(authors,mountPoint);
 	const _tags = tags && renderTagsLinks(tags,mountPoint);
 	const _series = series && renderSeriesLinks(series,mountPoint);
 	const authorsProp = _authors && renderProp('by',_authors,'author');
 	const dateProp = book_date && renderProp('Published on',renderDate(book_date),'date');
 	const tagsProp = _tags && renderProp('',_tags,'tags');
-	const _data = !summary && renderFiles(data,book_path,book_id,dbName,options);
+	const _data = shouldRenderFiles && renderFiles(data,book_path,book_id,dbName,options);
 	//<pre>${JSON.stringify(book,null,' ')}</pre>
 	return `<div class="container book ${summary?'book_summary':'book_full'}"><h${level} class="titleLink"><a href="${url}">${book_title}</a></h${level}>
 	${authorsProp || ''}

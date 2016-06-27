@@ -24,6 +24,10 @@ class Server extends Manager{
 			res.status(200).send(rows);
 			return;
 		}
+		if(req.session){
+			const authed = {authenticated:!!req.session.token};
+			options = Object.assign(authed,options);
+		}
 		const template = this.getTemplate(templates,command);
 		const text = template(rows,argument,command,dbName,options);
 		res.status(200).send(text);
