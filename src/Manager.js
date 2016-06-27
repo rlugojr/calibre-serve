@@ -51,6 +51,7 @@ class Manager{
 				return _resolve(self);
 			}
 			const dbName = dbNames[i++];
+			console.log('parsing:',dbName);
 			self.set(dbName).then(next).catch(_reject);
 			return true;
 		}

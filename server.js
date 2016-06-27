@@ -1,9 +1,11 @@
 const express = require('express');
+const path = require('path');
 const makeManager = require('./src')
 const connect = makeManager.connect;
 const app = express();
 const readDatabasesFromDisk = require('./src/utils/readDatabasesFromDisk');
-
+const favicon = require('serve-favicon');
+const localStatic = path.resolve(__dirname,'src/vendor');
 
 function startServer(root,title='Calibre Server',port=3000){
 
@@ -22,8 +24,13 @@ function startServer(root,title='Calibre Server',port=3000){
 		}
 	,	function(err,requestHandler){
 			if(err){throw err;}
-
+			app.use(function(req,res,next){
+				req.url = decodeURIComponent(req.url).replace(/\/'/,"'")
+				return next();
+			})
+			app.use(favicon(`${localStatic}/favicon.png`));
 			app.use(static,express.static(root))
+			app.use('/vendor',express.static(localStatic));
 			app.use(requestHandler);
 			app.listen(3000,function(){
 				console.log(`${title} listening on ${port}`);

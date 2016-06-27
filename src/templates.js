@@ -51,7 +51,8 @@ function renderFileLink(file,book_path,book_id,dbName,options){
 	const extension = data_format.toLowerCase();
 	const fileName = `${data_name}.${extension}`;
 	const filePath = getFileLink(fileName,book_path,book_id,dbName,options)
-	return `<span class="downloadLink"><a href="${filePath}">${data_format}</a></span>`;
+	const readOnline = (extension == 'epub') ? `<span class="downloadLink readOnlineLink"><a onClick="openBook('${filePath}')"> & read online</a></span>` : '';
+	return `<span class="downloadLink"><a href="${filePath}">as ${data_format}</a></span>${readOnline}`;
 }
 
 function renderFiles(files,book_path,book_id,dbName,options){
@@ -90,7 +91,7 @@ function renderBook(book,summary=true,dbName,options,level=3){
 	${_series || ''}
 	${dateProp || ''}
 	<a class="coverLink" href="${url}">${getCover(book_path,dbName,options,book_title)}</a>
-	${_data}
+	${_data || ''}
 	${comment && renderComment(comment,summary) || ''}
 	${tagsProp || ''}
 	</div>`
@@ -290,7 +291,49 @@ function page(fn){
 	return function render(rows,argument,command,dbName,options){
 		const title = options && options.title || 'Calibre Server';
 		const menu = menuBar(dbName,command,argument,options)
-		return `<!DOCTYPE html><html><head><title>${title}</title>${style()}</head><body><div class="Wrapper">${menu}<div class="content">${fn(rows,argument,command,dbName,options)}</div></div></body></html>`;
+		return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>${title}</title>${style()}
+<meta name="viewport" content="width=device-width">
+<meta name="apple-mobile-web-app-capable" content="yes">
+</head><body>
+<div class="Wrapper">${menu}<div class="content">${fn(rows,argument,command,dbName,options)}</div></div>
+<div id="BookContainer">
+	<div id="Book" style="top:-100%">
+		<div id="prev" class="arrow" onclick="prevPage();">‹</div>
+		<div id="Area"></div>
+		<div id="next" class="arrow" onclick="nextPage();">›</div>
+		<div id="close" class="arrow" onClick="hideBook()">×</div>
+		<div id="loader"><img src="/vendor/epub/loader.gif"></div>
+	</div>
+</div>
+<script src="/vendor/epub/epub.min.js"></script>
+<script src="/vendor/epub/zip.min.js"></script>
+<script>
+	var Book; 
+	var Container = document.getElementById('Book');
+	var Spinner = document.getElementById("loader");
+	var last;  
+	function hideBook(){
+		Container.style.top = '-100%';
+	}
+	function nextPage(){Book && Book.nextPage();}
+	function prevPage(){Book && Book.prevPage();}
+	function openBook(url){
+		Container.style.top=0;
+		if(url == last){return;}
+		last = url;
+		console.log("getting",url);
+		Spinner.style.display = "block";;
+		Book = ePub(url);
+		Book.ready.all.then(function(){
+			Spinner.style.display = "none";
+		});
+		Book.renderTo("Area");
+	};
+
+</script>
+</body></html>`;
 	}
 }
 
@@ -366,6 +409,8 @@ function style(){
 	return `<style>
 	body{
 		font-family:sans-serif;
+		height 100%
+		width 100%
 	}
 	.Wrapper{
 		max-width:1024px;
@@ -396,7 +441,14 @@ function style(){
 		border-radius:.3em;
 	}
 	.downloadLink a:before{
-		content:"download as ";
+		content:"download ";
+	}
+	.readOnlineLink{
+		float:right;
+		cursor:pointer
+	}
+	.readOnlineLink a{
+		background:#b387d2;
 	}
 	.nav{
 		background:#7CA7C4;
@@ -410,7 +462,13 @@ function style(){
 	}
 	.nav-commands{
 		background:#7DB6C9;
-	}
+	}#loader {
+  position: absolute;
+  z-index: 10;
+  left: 50%;
+  top: 50%;
+  margin: -33px 0 0 -33px;
+}
 	.search{
 		background:#90C3D4;
 	}
@@ -540,6 +598,69 @@ function style(){
 		width: 70%;
 		height: 1.2em;
 		background: linear-gradient(to right, rgba(${_bg.join(',')}, 0), rgba(${_bg.join(',')}, 1) 50%);
+	}
+	#Book {
+		position: absolute;
+		top:0;
+		left:0;
+		right:0;
+		height:100%;
+		background:#fdfdfd;
+		-webkit-box-shadow: inset 0px 0px 59px -1px rgba(0,0,0,0.13);
+		-moz-box-shadow: inset 0px 0px 59px -1px rgba(0,0,0,0.13);
+		box-shadow: inset 0px 0px 59px -1px rgba(0,0,0,0.13);
+		-webkit-transition: all 3s ease-in;
+		-moz-transition: all .3s ease-in;
+		-ms-transition: all .3s ease-in;
+		-o-transition: all .3s ease-in;
+		transition: all .3s ease-in;
+	}
+	#Area {
+		width: 80%;
+		height: 80%;
+		margin: 5% auto;
+		max-width: 1250px;
+	}
+	#Area iframe {
+		border: none;
+	}
+	#prev {
+		left: 40px;
+	}
+	#next {
+		right: 40px;
+	}
+	.arrow {
+		position: absolute;
+		top: 50%;
+		margin-top: -32px;
+		font-size: 64px;
+		color: #E2E2E2;
+		font-family: arial, sans-serif;
+		font-weight: bold;
+		cursor: pointer;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		user-select: none;
+	}
+	.arrow:hover {
+		color: #777;
+	}
+	.arrow:active {
+		color: #000;
+	}
+	#close{
+		top:.3em;
+		right:.3em;
+		width:1em;
+		height:1em;
+	}
+	#loader {
+		position: absolute;
+		z-index: 10;
+		left: 50%;
+		top: 50%;
+		margin: -33px 0 0 -33px;
 	}
 </style>`
 }

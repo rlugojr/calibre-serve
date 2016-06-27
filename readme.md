@@ -4,6 +4,8 @@ A [Calibre](https://calibre-ebook.com/) API manager and server.
 
 Opens the Calibre library as read-only; this is a module for *reading* the library only, the purpose being to serve a or several libraries from a directory that is synced with a local copy of Calibre.
 
+Has an integrated epub reader thanks to [epub.js](https://github.com/futurepress/epub.js/)
+
 ## Stand-Alone Usage:
 
 If you want to use it as a stand-alone server:
