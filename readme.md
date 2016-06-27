@@ -27,9 +27,13 @@ There is very basic protection for books by using the `--tokens` option, which w
 
 this is how the default templates look:
 
+Live: [books.xananax.com](books.xananax.com)
+
 ![preview](preview.png?raw=true)
 
-The default templates are very simple HTML and CSS and should work in any browser.
+The default templates are very simple HTML and CSS with no fancyness and should work in any browser, including mobiles of all sorts.
+
+Only the ebook reader uses javascript, and does not work with IE. 
 
 ----
 

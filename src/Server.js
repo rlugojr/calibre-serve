@@ -77,7 +77,7 @@ class Server extends Manager{
 				(command !== 'list' && !self.isValidDatabase(dbName))
 			){
 				if(onErrorNext){return next();}
-				return self.error(res,templates,dbName,command,argument,new Error(`wrong url`),options);
+				return self.error(req,res,templates,dbName,command,argument,new Error(`wrong url`),options);
 			}
 
 			const method = commandsMap[command];

@@ -1,6 +1,7 @@
 const commandsMap = require('./commandsMap');
 const moment = require('moment');
 const commands = Object.keys(commandsMap).filter(c=>c!=='list');
+const path = require('path');
 
 function renderTagLink(tag,root){
 	const {tag_name,tag_id} = tag;
@@ -273,20 +274,30 @@ function listPage(rows,argument,command,dbName,options){
 	}
 }
 
+function renderError(title,text){
+	return `<h1 class="error-title">${title}</h1><div class="error">${text}</div>`
+}
+
 function error(error,status,url,dbName,options){
 	const message = error.message;
+	const isFile = dbName=='covers';
 	if(message == 'no rows'){
 		const [thing,search] = url
-		const forSearch = search ? ` for search \`${search}\``:'';
-		return `<h1>Oops!</h1><div>couldn't find any \`${thing}\`${forSearch}.</div><div>Maybe try something else?</div>`
+		const forSearch = search ? ` that matches \`${search}\``:'';
+		return renderError('No Results',`<h3>Oops!</h3><p>couldn't find any ${thing}${forSearch}.</div><div>Maybe try something else?</p>`)
 	}
 	if(status == 404){
-		return `<h1>Error 404</h1><div>url \`/${dbName}/${url.join('/')}\` is not valid</div>`
+		url=url.join('/');
+		if(isFile){
+			const filename = path.basename(url);
+			return renderError('OMG Error 404',`it seems the file <pre>\`${filename}\`<pre> doesn't exist.`)
+		}
+		return renderError('OMG Error 404',`it seems the url <pre>\`/${dbName}/${url}\`<pre> is not valid.`)
 	}
 	if(status == 403){
-		return `<h1>Error 403</h1><div>You are not allowed to access this page or file</div>`
+		return renderError('Forbidden Acces (Error 403)',`You are not allowed to access this ${isFile ? 'file':'page'}`)
 	}
-	return `<h1>Internal Error</h1><div>${message}\nWhat happened? It's a mystery. Contact the website author please.</div>`
+	return renderError('Internal Server Error',`${message}<br><pre>${error.stack}</pre><br>What happened? It's a mystery. Contact the website author please.`);
 }
 
 function renderFooter(options){
@@ -461,7 +472,13 @@ function style(){
 	.downloadLink a:before{
 		content:"download ";
 	}
-	.readOnlineLink{
+	.readOnlineLink{f(options && options.json){
+			res.status(200).send(rows);
+			return;
+		}
+		const template = this.getTemplate(templates,command);
+		const text = template(rows,argument,command,dbName,options);
+		r
 		float:right;
 		cursor:pointer
 	}
