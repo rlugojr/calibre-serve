@@ -88,7 +88,7 @@ let ga='';
 let verbose=true;
 const {length} = args;
 let tokens;
-
+ge
 while(i<length){
 
 	const a = args[i++];
@@ -175,6 +175,10 @@ function details(){
 	console.log(` and will read databases from \`${databases && databases.map(d=>d.path).join(',') || 'NONE FOUND'}\`\n`)
 	console.log(tokens ? ` authentication tokens are \`[${tokens && tokens.join(',')}]\`\n` : ' no authentication tokens set\n')
 	console.log(footer ? ` footer will be set to \`${footer}\`` : ' no footer set')
+	console.log(ga? ` Google Analytics code will be set to \`${ga}\`` : ' no Google Analytics code')
+	if(!verbose){
+		console.log('there will be no log output')
+	}
 	if(!valid){
 		console.log('\n ERROR:')
 		console.log(errorInvalidDirectory(dir));
