@@ -23,6 +23,7 @@ the path should be **one directory above** your actual database directory. That 
 
 You can use `calibre-serve -h` for help about using options such as port or setting the server's title.
 
+There is very basic protection for books by using the `--tokens` option, which will require the user to provide a token in the url to download.
 
 this is how the default templates look:
 
