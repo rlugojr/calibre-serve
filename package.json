@@ -16,6 +16,7 @@
     "express": "^4.14.0",
     "express-session": "^1.13.0",
     "moment": "^2.13.0",
+    "opds": "^2.0.0",
     "serve-favicon": "^2.3.0",
     "session-file-store": "^0.2.0",
     "sqlite3": "^3.1.4",

@@ -2,13 +2,18 @@ const path = require('path');
 const Promise = require('bluebird');
 const DB = require('./DB');
 const commandsMap = require('./commandsMap');
-
+const opds = require('opds');
+const opdsMap = require('./opdsMap');
 
 class Manager{
-	constructor(root,directories,onReady){
+	constructor(root,directories,onReady,opts){
+		opts = opts || {};
 		this._root = root || __dirname;
 		this._dbs = {};
 		this._ready = false;
+		this._url_base = opts.root || '/';
+		this._title = opts.title || 'catalog';
+		this._author = opts.author || 'anonymous';
 		const self = this;
 		if(directories && directories.length){
 			this.setMultiple(directories)
@@ -29,7 +34,7 @@ class Manager{
 			if(setReady){self._ready = true;}
 			return self;
 		}).catch(function(err){
-			return err;
+			throw err;
 		});
 	}
 	setMultiple(dbNames){
@@ -93,8 +98,25 @@ class Manager{
 		}
 		return this._dbs[dbName];
 	}
+	toOPDS(dbName,id,type,results){
+		const {_url_base,_title,_author} = this;
+		const transformed = results.map(item=>opdsMap.series(_url_base,dbName,item));
+		const xml = typeof id !== 'undefined' && transformed.length == 1 ? 
+			opdsMap.page(dbName,_author,transformed[0]) :
+			opdsMap.page(dbName,_author,{books:transformed});
+		return opds.create(xml);
+	}
 	getBook(dbName,id){
 		return this.db(dbName).getBook(id);
+	}
+	getBookOPDS(dbName,id){
+		const {_url_base,_title,_author} = this;
+		return this.db(dbName).getBook(id).then(function(books){
+			books = books.map(book=>opdsMap.book(_url_base,dbName,book));
+			return opds.create(
+				opdsMap.page(_title,_author,{books})
+			)
+		});
 	}
 	getTag(dbName,id){
 		return this.db(dbName).getTag(id);
@@ -102,16 +124,30 @@ class Manager{
 	getSeries(dbName,id){
 		return this.db(dbName).getSeries(id);
 	}
+	getSeriesOPDS(dbName,id){
+		return this.getSeries(dbName,id)
+			.then(results=>this.toOPDS(dbName,id,'series',results))
+	}
 	getAuthor(dbName,id){
 		return this.db(dbName).getAuthor(id);
 	}
-	get(handle){
+	getAuthorOPDS(dbName,id){
+		const {_url_base,_title,_author} = this;
+		return this.getAuthor(dbName,id).then(function(authors){
+			authors = authors.map(a=>opdsMap.author(_url_base,dbName,a))
+			return opds.create(
+				opdsMap.page(_title,_author,{authors})
+			);
+		});
+	}
+	get(handle,opds=false){
 		if(!handle){return Promise.reject(new Error('no path provided'))};
 		const [dbName,command,...args] = handle.split('/');
 		if(!this.isValidCommand(command)){
 			return Promise.reject(new Error(`\`${command}\` is not a valid command`));
 		}
-		const method = commandsMap[command];
+		const commandName = opds ? `${command}OPDS` : command; 
+		const method = commandsMap[commandName];
 		const argument = args.join('/');
 		return this[method](dbName,argument);
 	}
@@ -131,6 +167,14 @@ class Manager{
 			type:'manager'
 		,	databases
 		});
+	}
+	getListOPDS(dbName){
+		const {_url_base,_title,_author} = this;
+		return this.getList(dbName).then(function(db){
+			return opds.create(
+				opdsMap.page(_title,_author,opdsMap.root(_url_base,db))
+			); 
+		})
 	}
 }
 
