@@ -1,6 +1,6 @@
 {
   "name": "calibre-serve",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "A calibre API and server",
   "main": "index.js",
   "bin": "cli.js",
@@ -12,7 +12,9 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.4.1",
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "express-session": "^1.13.0",
     "moment": "^2.13.0",
     "serve-favicon": "^2.3.0",
     "sqlite3": "^3.1.4",

@@ -271,7 +271,6 @@ function listPage(rows,argument,command,dbName,options){
 	else{
 		return renderDatabase(rows,options,dbName,1);
 	}
-	return 'don\'t know how to render that';
 }
 
 function error(error,status,url,dbName,options){
@@ -284,7 +283,10 @@ function error(error,status,url,dbName,options){
 	if(status == 404){
 		return `<h1>Error 404</h1><div>url \`/${dbName}/${url.join('/')}\` is not valid</div>`
 	}
-	return `<h1>Internal Error</h1><div>What happened? It's a mystery. Contact the website author please.</div>`
+	if(status == 403){
+		return `<h1>Error 403</h1><div>You are not allowed to access this page or file</div>`
+	}
+	return `<h1>Internal Error</h1><div>${message}\nWhat happened? It's a mystery. Contact the website author please.</div>`
 }
 
 function page(fn){
@@ -292,7 +294,7 @@ function page(fn){
 		const title = options && options.title || 'Calibre Server';
 		const menu = menuBar(dbName,command,argument,options)
 		return `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<html class="nojs"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>${title}</title>${style()}
 <meta name="viewport" content="width=device-width">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -331,7 +333,7 @@ function page(fn){
 		});
 		Book.renderTo("Area");
 	};
-
+	document.getElementByTagName('html')[0].className = '';
 </script>
 </body></html>`;
 	}
@@ -449,6 +451,9 @@ function style(){
 	}
 	.readOnlineLink a{
 		background:#b387d2;
+	}
+	.nojs readOnlineLink a{
+		display none;
 	}
 	.nav{
 		background:#7CA7C4;

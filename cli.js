@@ -39,11 +39,20 @@ function printHelp(additional=''){
  the server will take care of reading all sub-directories and
  adding the ones that have a \`metadata.db\`
 
+You can add basic auth to the server by making use of 'tokens'
+If you set, for example:
+ 
+    ${name} /home/user/calibre -p 3000 -t a,b,c
+
+Then to download a book, a user will have to have accessed the website
+once with, for example, "?token=b"
+
  options:
     -h,--help: this message
     -v,--version: print version and exit
     -p,--port: specify port (defaults to 3000)
     -t,--title: specify server title
+	-o,--tokens: a comma-separated list of tokens
     --test: verify that the directory is valid
 ${additional}`);
 }
@@ -87,6 +96,7 @@ let title = 'Calibre Server';
 let i = 0;
 let testing = false;
 const {length} = rest;
+let tokens;
 
 while(i<length){
 
@@ -103,6 +113,11 @@ while(i<length){
 		continue;
 	}
 
+
+	if(testArg('o','tokens',a)){
+		tokens = args[++i];
+		continue;
+	}
 
 	if(testArg('h','help',a)){
 		printHelp();
@@ -131,10 +146,19 @@ while(i<length){
 
 }
 
-if(testing){
+if(tokens){
+	tokens = tokens.split(',').map(token=>token.trim())
+}
+
+function details(){
 	console.log(' status: VALID\n');
 	console.log(` \`${title}\` server will run on port \`${port}\``)
 	console.log(` and will read databases from \`${databases.map(d=>d.path).join(',')}\`\n`)
+	console.log(tokens ? ` authentication tokens are \`[${tokens && tokens.join(',')}]\`\n` : ' no authentication tokens set\n')
+}
+
+if(testing){
+	details();
 	process.exit(0);
 }
 
@@ -149,4 +173,6 @@ if(!databases || !databases.length){
 `)
 }
 
-require('./server')(arg,title,port);
+details();
+
+require('./server')(arg,title,port,tokens);

@@ -28,6 +28,8 @@ this is how the default templates look:
 
 ![preview](preview.png?raw=true)
 
+The default templates are very simple HTML and CSS and should work in any browser.
+
 ----
 
 ## Node API
