@@ -55,6 +55,8 @@ once with, for example, "?token=b"
 	-o,--tokens: a comma-separated list of tokens
 	-f,--footer: specify a footer
 	-b,--base: the base directory (can also be specified without a switch)
+	-g,--google: google analytics code ("ua-xxxxxx")
+	-s,--silent: no log output
     --test: verify that the directory is valid
 ${additional}`);
 }
@@ -82,6 +84,8 @@ let title = 'Calibre Server';
 let i = 0;
 let testing = false;
 let footer = '';
+let ga='';
+let verbose=true;
 const {length} = args;
 let tokens;
 
@@ -111,6 +115,11 @@ while(i<length){
 		continue;
 	}
 
+	if(testArg('g','google',a)){
+		ga = args[i++];
+		continue;
+	}
+
 	if(testArg('f','footer',a)){
 		footer = args[i++];
 		continue;
@@ -130,7 +139,10 @@ while(i<length){
 		testing = true;
 		continue;
 	}
-
+	if(testArg('s','silent',a)){
+		verbose = false;
+		continue;
+	}
 	dir = a;
 
 }
@@ -193,4 +205,4 @@ if(!databases || !databases.length){
 
 details();
 
-require('./server')(dir,title,port,tokens,footer);
+require('./server')(dir,title,port,tokens,footer,ga,verbose);

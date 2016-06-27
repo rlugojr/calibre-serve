@@ -29,7 +29,7 @@ function errorLog(err,req,res,next){
 	return next();
 }
 
-function startServer(root,title='Calibre Server',port=3000,tokens=false,footer='',verbose=true){
+function startServer(root,title='Calibre Server',port=3000,tokens=false,footer='',ga=null,verbose=true){
 
 	if(!root){throw new Error('root is not defined');}
 
@@ -52,6 +52,7 @@ function startServer(root,title='Calibre Server',port=3000,tokens=false,footer='
 		, mountPoint:'/'
 		, title
 		, footer
+		, ga
 		}
 	,	function(err,requestHandler){
 			if(err){throw err;}
