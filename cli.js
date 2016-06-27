@@ -170,7 +170,6 @@ function errorNoMetadata(dir){
 }
 
 function details(){
-	console.log('\n testing:')
 	console.log(` \`${title}\` server will run on port \`${port}\``)
 	console.log(` and will read databases from \`${databases && databases.map(d=>d.path).join(',') || 'NONE FOUND'}\`\n`)
 	console.log(tokens ? ` authentication tokens are \`[${tokens && tokens.join(',')}]\`\n` : ' no authentication tokens set\n')
@@ -195,6 +194,7 @@ function details(){
 }
 
 if(testing){
+	console.log('\n testing:\n');
 	details();
 	process.exit(0);
 }
