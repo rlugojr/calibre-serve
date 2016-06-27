@@ -88,7 +88,7 @@ let ga='';
 let verbose=true;
 const {length} = args;
 let tokens;
-ge
+
 while(i<length){
 
 	const a = args[i++];
