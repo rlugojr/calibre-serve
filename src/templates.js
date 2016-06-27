@@ -289,10 +289,17 @@ function error(error,status,url,dbName,options){
 	return `<h1>Internal Error</h1><div>${message}\nWhat happened? It's a mystery. Contact the website author please.</div>`
 }
 
+function renderFooter(options){
+	const footer = options.footer;
+	if(!footer){return '';}
+	return `<div class="Footer"><span>${footer}</span></div>`
+}
+
 function page(fn){
 	return function render(rows,argument,command,dbName,options){
 		const title = options && options.title || 'Calibre Server';
 		const menu = menuBar(dbName,command,argument,options)
+		const footer = renderFooter(options); 
 		return `<!DOCTYPE html>
 <html class="nojs"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>${title}</title>${style()}
@@ -300,6 +307,7 @@ function page(fn){
 <meta name="apple-mobile-web-app-capable" content="yes">
 </head><body>
 <div class="Wrapper">${menu}<div class="content">${fn(rows,argument,command,dbName,options)}</div></div>
+${footer}
 <div id="BookContainer">
 	<div id="Book" style="top:-100%">
 		<div id="prev" class="arrow" onclick="prevPage();">‹</div>
@@ -417,6 +425,14 @@ function style(){
 	.Wrapper{
 		max-width:1024px;
 		margin: 0 auto;
+		min-height: 800px;
+	}
+	.Footer{
+		clear:both;
+		width:100%;
+		text-align:center;
+		font-size:.7em;
+		margin-top:10em;
 	}
 	.content{
 		margin-top:1em;

@@ -8,7 +8,7 @@ const favicon = require('serve-favicon');
 const localStatic = path.resolve(__dirname,'src/vendor');
 const authentication = require('./src/authentication');
 
-function startServer(root,title='Calibre Server',port=3000,tokens){
+function startServer(root,title='Calibre Server',port=3000,tokens,footer){
 
 	if(!root){throw new Error('root is not defined');}
 
@@ -30,6 +30,7 @@ function startServer(root,title='Calibre Server',port=3000,tokens){
 		, static:static
 		, mountPoint:'/'
 		, title
+		, footer
 		}
 	,	function(err,requestHandler){
 			if(err){throw err;}

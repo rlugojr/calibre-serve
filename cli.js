@@ -53,6 +53,7 @@ once with, for example, "?token=b"
     -p,--port: specify port (defaults to 3000)
     -t,--title: specify server title
 	-o,--tokens: a comma-separated list of tokens
+	-f,--footer: specify a footer
     --test: verify that the directory is valid
 ${additional}`);
 }
@@ -95,6 +96,7 @@ let port = 3000;
 let title = 'Calibre Server';
 let i = 0;
 let testing = false;
+let footer = '';
 const {length} = rest;
 let tokens;
 
@@ -116,6 +118,11 @@ while(i<length){
 
 	if(testArg('o','tokens',a)){
 		tokens = args[++i];
+		continue;
+	}
+
+	if(testArg('f','footer',a)){
+		footer = args[++i];
 		continue;
 	}
 
@@ -175,4 +182,4 @@ if(!databases || !databases.length){
 
 details();
 
-require('./server')(arg,title,port,tokens);
+require('./server')(arg,title,port,tokens,footer);
