@@ -307,11 +307,21 @@ function renderFooter(options){
 	return `<div class="Footer"><span>${footer}</span></div>`
 }
 
+function renderGoogleAnalytics(options){
+	const ga = options.ga;
+	if(!ga){return '';}
+	return `<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create', '${ga}', 'auto');
+ga('send', 'pageview');
+</script>`
+}
+
 function page(fn){
 	return function render(rows,argument,command,dbName,options){
 		const title = options && options.title || 'Calibre Server';
 		const menu = menuBar(dbName,command,argument,options)
 		const footer = renderFooter(options); 
+		const ga = renderGoogleAnalytics(options)
 		return `<!DOCTYPE html>
 <html class="nojs"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>${title}</title>${style()}
@@ -353,8 +363,9 @@ ${footer}
 		});
 		Book.renderTo("Area");
 	};
-	document.getElementByTagName('html')[0].className = '';
+	document.getElementsByTagName('html')[0].className = '';
 </script>
+${ga}
 </body></html>`;
 	}
 }
