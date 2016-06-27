@@ -27,7 +27,7 @@ There is very basic protection for books by using the `--tokens` option, which w
 
 this is how the default templates look:
 
-Live: [books.xananax.com](books.xananax.com)
+Live: [books.xananax.com](//books.xananax.com)
 
 ![preview](preview.png?raw=true)
 
